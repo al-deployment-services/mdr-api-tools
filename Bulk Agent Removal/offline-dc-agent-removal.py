@@ -21,7 +21,7 @@ from mfavariables import *
 ### Validate Authentication to Alert Logic API
 # Function to get AIMS Token with the provided username and password
 def get_api_token():
-    url = f'{global_url}aims/v1/authenticate'
+    url = f'{global_url}/aims/v1/authenticate'
     global auth_token
     global token_response
     # User credentials
@@ -47,7 +47,7 @@ def get_api_token():
 
 # Function to validate the AIMS token was successfully generated, and that it has not expired
 def validate_token():
-    url = f'{global_url}aims/v1/token_info'
+    url = f'{global_url}/aims/v1/token_info'
     headers = {'x-aims-auth-token': f'{auth_token}'}
     global validate_info
     validate_response = requests.get(url, headers=headers)

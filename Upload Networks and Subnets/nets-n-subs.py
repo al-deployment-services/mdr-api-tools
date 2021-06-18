@@ -10,7 +10,6 @@ import os
 import re
 import requests
 import time
-#import pandas
 from datetime import datetime
 
 # Permanent Variables
@@ -30,7 +29,7 @@ def get_api_token():
     # User credentials
     aims_user = username
     aims_pass = password
-    # Ask the user for their MFA code
+    # Ask the user for their MFA codels -la
     mfa_code = input('Please provide your MFA code: ')
     mfa_payload = {"mfa_code": mfa_code}
 
@@ -64,7 +63,7 @@ def validate_token():
     num_seconds_before_expired=(token_expiration - current_time)
 
     if num_seconds_before_expired < 0 :
-        print(Fore.RED + ' Errror: Could not generate / validate AIMS Token. Please check credentials and try again\n' + Style.RESET_ALL)
+        print(Fore.RED + ' Error: Could not generate / validate AIMS Token. Please check credentials and try again\n' + Style.RESET_ALL)
         exit()
     else :
         print(Fore.GREEN + ' AIMS token generated and validated.\n' + Style.RESET_ALL)

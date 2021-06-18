@@ -11,7 +11,6 @@ import os
 import re
 import requests
 import time
-#import pandas
 from datetime import datetime
 
 # Permanent Variables
@@ -22,7 +21,7 @@ false=False
 from variables import *
 #from testvariables import *
 
-sources_query_url = f'{sources_url}sources/v1/{alert_logic_cid}/hosts'
+sources_query_url = f'{sources_url}/sources/v1/{alert_logic_cid}/hosts'
 missing_network_source_list = []
 multiple_network_source_list = []
 missing_network_full_list = []
@@ -30,7 +29,7 @@ missing_network_full_list = []
 ### Validate Authentication to Alert Logic API
 # Function to get AIMS Token with the provided username and password
 def get_api_token():
-    url = f'{global_url}aims/v1/authenticate'
+    url = f'{global_url}/aims/v1/authenticate'
     global auth_token
     global token_response
     # User credentials
@@ -56,7 +55,7 @@ def get_api_token():
 
 # Function to validate the AIMS token was successfully generated, and that it has not expired
 def validate_token():
-    url = f'{global_url}aims/v1/token_info'
+    url = f'{global_url}/aims/v1/token_info'
     headers = {'x-aims-auth-token': f'{auth_token}'}
     global validate_info
     validate_response = requests.get(url, headers=headers)
@@ -146,12 +145,11 @@ def get_orphan_info(sources_query_url):
                 net_count = 0
                 for net in multiple_networks:
                     net_count = net_count + 1
-                    network_name = net['network']['name']
-                    network_key = net['network']['key']
-                    deployment_name = net['deployment']['name']
-                    deployment_id = net['deployment']['id']
+                    network_name = net['name']
+                    network_key = net['key']
+                    deployment_id = net['deployment_id']
                     network_entry = f'network_{net_count}'
-                    network_dict = {'network_name': network_name, 'network_key': network_key, 'deployment_name': deployment_name, 'deployment_id': deployment_id}
+                    network_dict = {'network_name': network_name, 'network_key': network_key, 'deployment_id': deployment_id}
                     #print(network_dict)
                     network_details = {network_entry : network_dict}
                     multiple_networks_list.append(network_details)

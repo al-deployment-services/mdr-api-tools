@@ -3,3 +3,4 @@ list-vulnerabilities.py
 variables.py
 testmfavariables.py
 vulnerabilities_export.csv
+vulnerabilities_export_mfa.csv

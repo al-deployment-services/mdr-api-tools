@@ -1,8 +1,8 @@
 # Variables File
 
 # URL for API interaction:
-global_url = 'https://api.cloudinsight.alertlogic.com/'
-sources_url = 'https://yard.alertlogic.com/'
+global_url = 'https://api.cloudinsight.alertlogic.com'
+sources_url = 'https://yard.alertlogic.com'
 
 # Login Credentials (username and password - be sure to escape characters as needed i.e. \' or \"):
 username = ''
