@@ -12,4 +12,4 @@ alert_logic_cid = ''
 deployment_id = ''
 
 # Imported CSV File Name:
-networks_csv = 'networks.csv'
+network_csv_file = 'networks.csv'

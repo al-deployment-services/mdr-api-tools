@@ -9,7 +9,18 @@ This tool was desinged to integrate with the Alert Logic MDR API platform to cle
 This tool was designed to allow you to export the List of Vulnerabilities report from Alert Logic on a time interval, say, using a cron job.
 
 ### Import External IPs and FQDNs 
-This tool was designed to allow you to mass import external IP addresses in single IP or up to /24 CIDR notation, as well as nass import Fully Qualified Domain Names to be scanned externally. Please do not upload the examples in the csv files.
+This tool was designed to allow you to mass import external IP addresses in single IP or up to /24 CIDR notation, as well as nass import Fully Qualified Domain Names to be scanned externally. There are also options to remove all external IPs or remove all external FQDNs. See options details below:
+
+usage: external-assets-import.py [-h] [-add] [--delete_all_ips] [--delete_all_fqdns]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -add, --add_ips_or_fqdns
+                        upload the desired external IPs and FQDNs that are specified in the external-fqdns.csv and external-ips.csv files
+  --delete_all_ips      delete all existing external IPs for the CID in the provided variables.py file
+  --delete_all_fqdns    delete all existing external IPs for the CID in the provided variables.py file
+
+Please do not upload the examples in the csv files.
 
 ### List of Assets for MDR (In Progress)
 This tool was designed to export a list of all assets for a customer's account per deployment.
