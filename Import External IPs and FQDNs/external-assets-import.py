@@ -19,8 +19,8 @@ true=True
 false=False
 
 # Variables from variables.py file
-#from variables import *
-from testvariables import *
+from variables import *
+#from testvariables import *
 
 ### Validate Authentication to Alert Logic API
 # Function to get AIMS Token with the provided username and password
@@ -152,20 +152,21 @@ def import_external_assets():
             ips_reader = csv.reader(ips_csv_file)
             ip_entries = list(ips_reader)
         for entry in ip_entries:
+            ip_name = entry[0]
             try:
-                cidr_check = entry[0].split("/")
+                cidr_check = entry[1].split("/")
             except Exception as e:
                 print(Fore.RED + f'    Error: Encountered the following \'{e}\'. Please make sure each row is not populated with blank space.' + Style.RESET_ALL)
                 cidr_check = ''
             
-            def ip_upload(ip):
+            def ip_upload(ip_name,ip):
                 ip_payload= {
                         "operation": "declare_asset",
                         "type": "external-ip",
                         "scope": "config",
                         "key": "/external-ip/"+ip+"",
                         "properties": {
-                            "name": ""+ip+"",
+                            "name": ""+ip_name+" - "+ip+"",
                             "ip_address": ""+ip+"",
                             "state": "new"
                         }
@@ -189,12 +190,12 @@ def import_external_assets():
                 continue
             elif  len(cidr_check) == 1:
                 try: 
-                    ip_validation = ipaddress.ip_address(entry[0])
-                    ip = entry[0]
-                    ip_upload(ip)
+                    ip_validation = ipaddress.ip_address(entry[1])
+                    ip = entry[1]
+                    ip_upload(ip_name,ip)
 
                 except ValueError:
-                    print(Fore.RED + f'    Error: This is not a valid IP address or CIDR range: {entry[0]}' + Style.RESET_ALL)
+                    print(Fore.RED + f'    Error: This is not a valid IP address or CIDR range: {entry[1]}' + Style.RESET_ALL)
                     continue
             
             elif len(cidr_check) == 2:
@@ -215,7 +216,7 @@ def import_external_assets():
                             ip = ip_address
                             network_range_list.pop()
 
-                            ip_upload(ip)
+                            ip_upload(ip_name,ip)
 
                     except ValueError:
                         print(Fore.RED + f'    Error: The IP in CIDR range: {cidr_check[0]} is not valid.' + Style.RESET_ALL)
@@ -223,7 +224,7 @@ def import_external_assets():
                     print(Fore.RED + f'    Error: CIDR range entries support '"'/24'"' - '"'/32'"'' + f" You provided '/{cidr_range}'" + Style.RESET_ALL)
 
             else:
-                print(Fore.RED + f'    Error: IP list {entry[0]} was in an incorrect format. Please use either 10.10.10.1 or 10.10.10.0/28 per line. CIDR range entries support '"'/24'"' - '"'/32'"'' + Style.RESET_ALL)
+                print(Fore.RED + f'    Error: IP list {entry[1]} was in an incorrect format. Please use either 10.10.10.1 or 10.10.10.0/28 per line. CIDR range entries support '"'/24'"' - '"'/32'"'' + Style.RESET_ALL)
 
     print(Fore.GREEN + f'\nCompleted upload of entries in both files: {external_fqdns_csv} and {external_ips_csv}' + Style.RESET_ALL)
 
