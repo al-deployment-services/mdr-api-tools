@@ -1,23 +1,2 @@
-CORP - External,199.184.163.0/24
-CORP - External,202.75.194.128/25
-CORP - External,202.95.122.0/25
-CORP - External,216.6.208.0/24
-CORP - External,216.6.209.0/24
-CORP - External,216.6.210.0/24
-CORP - External,216.6.211.0/24
-CORP - External,216.6.212.0/24
-CORP - External,216.6.213.0/24
-CORP - External,216.6.214.0/24
-CORP - External,216.6.215.0/24
-CORP - External,216.6.216.0/24
-CORP - External,216.6.217.0/24
-CORP - External,216.6.218.0/24
-CORP - External,216.6.219.0/24
-CORP - External,216.6.220.0/24
-CORP - External,216.6.221.0/24
-CORP - External,216.6.222.0/24
-CORP - External,216.6.223.0/24
-CORP - External,63.84.151.0/25
-CORP - External,63.97.171.80/28
-CORP - External,65.196.174.112/28
-CORP - External,65.209.18.240/28
+Scan Name - Prefix,8.8.8.8
+Scan Name 2 - Prefix,100.100.0.0/28
