@@ -20,6 +20,7 @@ def usage():
 
     sys.exit()
 
+# Create object w/ discovery scope feature for use in updating deployments
 def scopeFeature(regions, inc="include"):
     feature = {}
     reg = []
@@ -31,9 +32,9 @@ def scopeFeature(regions, inc="include"):
     #print(f"{feature}")
     return feature
 
-def getDeployments(cid):
-    depClient = almdrlib.client("deployments")
-    res = depClient.list_deployments(account_id=cid)
+# Get all AWS deployments currently in error
+def getDeployments(cid, client):
+    res = client.list_deployments(account_id=cid)
     errors = []
     for d in res.json():
         if d['platform']['type'] == 'aws':
@@ -44,13 +45,12 @@ def getDeployments(cid):
                 #print("")
     return errors
 
-def updateDeployment(cid, dep, feature):
-    print(f"{dep['id']=}")
-    depClient = almdrlib.client("deployments")
-    res = depClient.update_deployment(account_id=cid,
+# Update the given deployment with the selected discovery scope feature
+def updateDeployment(cid, dep, feature, client):
+    res = client.update_deployment(account_id=cid,
         deployment_id=dep['id'],
         version=dep['version'], features=feature)
-    print(f"{res=}")
+    print(f"Deployment: {d['name']} - Result = {res}")
     exit
 
 # Main logic
@@ -68,12 +68,18 @@ elif sys.argv[2] == '-i':
 else:
     usage()
 
+# Build feature object based on command line
 feature = scopeFeature(sys.argv[3], mode)
 
-errDep = getDeployments(cid)
+# Get an API client for deployments service
+depClient = almdrlib.client("deployments")
+
+# Get all AWS deployments in error
+errDep = getDeployments(cid, depClient)
 
 print(f"AWS deployments in error {len(errDep)}")
 
+# Loop through the deployments in error and update them with the discovery scope
 for d in errDep:
-    updateDeployment(cid, d, feature)
+    updateDeployment(cid, d, feature, depClient)
     time.sleep(1)
