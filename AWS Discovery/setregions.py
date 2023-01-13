@@ -9,16 +9,64 @@ import almdrlib
 import time
 
 def usage():
-    print(f"{sys.argv[0]} usage:")
-    print(f"{sys.argv[0]} CID [-x|-i] us-east-1,us-east-2")
-    print(f"")
-    print(f"One of:")
-    print(f" -x - Exclude listed regions from discovery")
-    print(f" -i - Only include listed regions in discovery")
-    print(f"")
-    print(f"List of regions is comma separated")
+    print(f'''
+{sys.argv[0]} usage:
+{sys.argv[0]} -c CID -r us-east-1,us-east-2 [other options]
+
+Options:
+    -c [CID]:  Alert Logic customer ID - https://console.account.alertlogic.com/#/support/home
+    -r [list]:  Comma separated list of AWS regions
+    -i:  Only include specified regions in discovery
+    -x:  Exclude specified regions from discovery
+    -e:  Apply Discovery regions to all AWS deployments in error
+    -a:  Apply Discovery regions to all AWS deployments
+    -d [AWSID]:  Apply Discovery regions to all AWS deployments
+    -h:  This usage page
+
+CID and Region list are required.    If no other options are specified,
+this script will default to AWS deployments in error and 'include' mode.
+''')
 
     sys.exit()
+
+def getOptions():
+    opts = {}
+
+    # Default filter and type
+    opts['filter'] = 'error'
+    opts['type'] = 'include'
+    
+    # Loop through options
+    i=1
+    while i < len(sys.argv):
+        if sys.argv[i] == '-h':
+            usage()
+        elif sys.argv[i] == '-c':
+            i += 1
+            opts['cid'] = sys.argv[i]
+        elif sys.argv[i] == '-i':
+            opts['type'] = 'include'
+        elif sys.argv[i] == '-x':
+            opts['type'] = 'exclude'
+        elif sys.argv[i] == '-r':
+            i += 1
+            opts['regions'] = sys.argv[i]
+        elif sys.argv[i] == '-a':
+            opts['filter'] = 'all'
+        elif sys.argv[i] == '-e':
+            opts['filter'] = 'error'
+        elif sys.argv[i] == '-d':
+            i += 1
+            opts['filter'] = sys.argv[i]
+        else:
+            usage()
+        i += 1
+    # Check to make sure we got a CID and regions
+    if not opts['cid'] or not opts['regions']:
+        print("Both CID and region list are required")
+        usage()
+    print (f"{opts=}")
+    return opts
 
 # Create object w/ discovery scope feature for use in updating deployments
 def scopeFeature(regions, inc="include"):
@@ -32,18 +80,23 @@ def scopeFeature(regions, inc="include"):
     #print(f"{feature}")
     return feature
 
-# Get all AWS deployments currently in error
-def getDeployments(cid, client):
+# Get AWS deployments according to filter
+#  Filter can be 'all', 'error', or a specific AWS account number
+def getDeployments(cid, client, filter):
     res = client.list_deployments(account_id=cid)
-    errors = []
+    deps = []
     for d in res.json():
+        #print("Deployment")
+        #print(f"{d}")
+        #print("")
         if d['platform']['type'] == 'aws':
-            if d['status']['status'] == 'error':
-                errors.append(d)
-                #print("Deployment")
-                #print(f"{d}")
-                #print("")
-    return errors
+            if filter == 'all':
+                deps.append(d)
+            elif filter == 'error' and d['status']['status'] == 'error':
+                deps.append(d)
+            elif d['platform']['id'] == filter:
+                deps.append(d)
+    return deps
 
 # Update the given deployment with the selected discovery scope feature
 def updateDeployment(cid, dep, feature, client):
@@ -54,32 +107,20 @@ def updateDeployment(cid, dep, feature, client):
     exit
 
 # Main logic
-# Check for correct number of arguments
-if len(sys.argv) != 4:
-    usage()
-
-cid = sys.argv[1]
-
-# Get the mode we will be using or print usage
-if sys.argv[2] == '-x':
-    mode='exclude'
-elif sys.argv[2] == '-i':
-    mode='include'
-else:
-    usage()
+opts = getOptions()
 
 # Build feature object based on command line
-feature = scopeFeature(sys.argv[3], mode)
+feature = scopeFeature(opts['regions'], opts['type'])
 
 # Get an API client for deployments service
 depClient = almdrlib.client("deployments")
 
 # Get all AWS deployments in error
-errDep = getDeployments(cid, depClient)
+deps = getDeployments(opts['cid'], depClient, opts['filter'])
 
-print(f"AWS deployments in error {len(errDep)}")
+print(f"AWS deployments to update {len(deps)}")
 
 # Loop through the deployments in error and update them with the discovery scope
-for d in errDep:
-    updateDeployment(cid, d, feature, depClient)
+for d in deps:
+    updateDeployment(opts['cid'], d, feature, depClient)
     time.sleep(1)
