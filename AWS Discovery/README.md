@@ -6,6 +6,8 @@ This script gives the option to either configure regions to be excluded from dis
 
 By default, only AWS deployments that are in error will be updated.
 
+Once the allowed regions have been updated successfully, it may take up to 12 hours for the discovery process to complete.
+
 Requirements:
 -----
 - Python 3.8+

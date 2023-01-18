@@ -65,7 +65,7 @@ def getOptions():
     if not opts['cid'] or not opts['regions']:
         print("Both CID and region list are required")
         usage()
-    print (f"{opts=}")
+    # print (f"{opts=}")
     return opts
 
 # Create object w/ discovery scope feature for use in updating deployments
@@ -103,7 +103,12 @@ def updateDeployment(cid, dep, feature, client):
     res = client.update_deployment(account_id=cid,
         deployment_id=dep['id'],
         version=dep['version'], features=feature)
-    print(f"Deployment: {d['name']} - Result = {res}")
+    if res.status_code == 200:
+        print(f"Deployment: {d['name']}")
+        print(f"  - Result: Success")
+    else:
+        print(f"Deployment: {d['name']}")
+        print(f"  - Result: Error:  {res.text}")
     exit
 
 # Main logic
